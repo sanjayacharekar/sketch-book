@@ -17,7 +17,7 @@
             .colorBox{
                 @apply h-5 w-5 mr-1 rounded-sm cursor-pointer;
 
-                &:hover, &:active{
+                &:hover, &.active{
                     border: 1.5px solid theme('colors.border1');
                     box-shadow: theme('colors.shadow2');  
                 }
