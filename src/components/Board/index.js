@@ -80,9 +80,33 @@ const Board = () => {
       drawLine(e.clientX, e.clientY);
       socket.emit("drawLine", { x: e.clientX, y: e.clientY });
     };
+    
+    const handleTouchStart = (e) => {
+      shouldRef.current = true;
+      beginPath(e.touches[0].clientX, e.touches[0].clientY);
+      socket.emit("beginPath", { x: e.touches[0].clientX, y: e.touches[0].clientY });
+    };
+
+    const handleTouchEnd = (e) => {
+      shouldRef.current = false;
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      drawHistory.current.push(imageData);
+      historyPointer.current = drawHistory.current.length - 1;
+    };
+
+    const handleTouchMove = (e) => {
+      if (!shouldRef.current) return;
+      drawLine(e.touches[0].clientX, e.touches[0].clientY);
+      socket.emit("drawLine", { x: e.touches[0].clientX, y: e.touches[0].clientY });
+    };
+
     canvas.addEventListener("mousedown", handleMouseDown);
     canvas.addEventListener("mouseup", handleMouseUp);
     canvas.addEventListener("mousemove", handleMouseMove);
+
+    canvas.addEventListener("touchstart", handleTouchStart);
+    canvas.addEventListener("touchend", handleTouchEnd);
+    canvas.addEventListener("touchmove", handleTouchMove);
 
     const handleBeginPath = (path) => {
       beginPath(path.x, path.y);
@@ -99,6 +123,10 @@ const Board = () => {
       canvas.removeEventListener("mousedown", handleMouseDown);
       canvas.removeEventListener("mouseup", handleMouseUp);
       canvas.removeEventListener("mousemove", handleMouseMove);
+
+      canvas.removeEventListener("touchstart", handleTouchStart);
+      canvas.removeEventListener("touchend", handleTouchEnd);
+      canvas.removeEventListener("touchmove", handleTouchMove);
 
       socket.off("beginPath", handleBeginPath);
       socket.off("drawLine", handleDrawLine);
