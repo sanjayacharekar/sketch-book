@@ -7,6 +7,9 @@ const Board = () => {
   const canvasRef = useRef(null);
   const shouldRef = useRef(null);
 
+  const drawHistory = useRef([]);
+  const historyPointer = useRef(0);   
+
   const { activeMenuItem, actionMenuItem } = useSelector((state) => state.menu);
   const { color, size } = useSelector((state) => state.toolbox[activeMenuItem]);
   const dispatch = useDispatch();
@@ -23,11 +26,18 @@ const Board = () => {
       anchor.download = "sketch.jpg";
       anchor.click();
       dispatch(actionItemClick(null));
-    }
+    }else if(actionMenuItem === MENU_ITEMS.UNDO || actionMenuItem === MENU_ITEMS.REDO){
+      if(historyPointer.current > 0 && actionMenuItem === MENU_ITEMS.UNDO) historyPointer.current -= 1
+      if(historyPointer.current < drawHistory.current.length - 1 &&  actionMenuItem === MENU_ITEMS.REDO) historyPointer.current += 1
+      const imageData = drawHistory.current[historyPointer.current]
+      context.putImageData(imageData,0,0)
+    } 
+    dispatch(actionItemClick(null))
   }, [actionMenuItem, dispatch]);
 
   // before browser paint
-  useLayoutEffect(() => {
+  React.useLayoutEffect = React.useEffect // added this only to remove ssr warning 
+  React.useLayoutEffect(() => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
@@ -50,6 +60,9 @@ const Board = () => {
     };
     const handleMouseUp = (e) => {
       shouldRef.current = false;
+      const imageData = context.getImageData(0,0,canvas.width,canvas.height);
+      drawHistory.current.push(imageData)
+      historyPointer.current = drawHistory.current.length -1 //history pointer set value
     };
     const handleMouseMove = (e) => {
       if (!shouldRef.current) return;

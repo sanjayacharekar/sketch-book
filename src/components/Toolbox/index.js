@@ -9,7 +9,6 @@ const Toolbox = () => {
   const dispatch = useDispatch();
   const activeMenuItem = useSelector((state) => state.menu.activeMenuItem);
   const { color, size } = useSelector((state) => state.toolbox[activeMenuItem]);
-  console.log(size,'size')
   const showStrokeToolOptions = activeMenuItem === MENU_ITEMS.PENCIL;
   const showBrushToolOptions =
     activeMenuItem === MENU_ITEMS.ERASER ||
