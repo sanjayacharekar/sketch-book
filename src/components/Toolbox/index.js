@@ -86,7 +86,7 @@ const Toolbox = () => {
             <input
               type="range"
               min={1}
-              max={10}
+              max={activeMenuItem === MENU_ITEMS.PENCIL ? 10 : 90}
               onChange={updateBrushSize}
               value={size}
             />

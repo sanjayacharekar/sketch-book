@@ -142,7 +142,6 @@ const Board = () => {
       context.lineWidth = size;
     };
     const handleChangeConfig = (config) => {
-      console.log(config);
       changeConfig(config.color,config.size);
     };
     changeConfig(color,size);
